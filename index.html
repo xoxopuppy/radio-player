@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:transparent">
+<button id="btn" style="padding:12px 24px;font-size:16px;cursor:pointer">▶ Écouter</button>
+<script>
+const LOOP = 1839;
+const URL = "https://pub-4b318b763d6641acb72762ac7e54181d.r2.dev/loop.mp3";
+let audio = null;
+document.getElementById('btn').onclick = function() {
+  if (!audio) {
+    audio = new Audio(URL);
+    audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
+    audio.play();
+    this.textContent = '⏸ En écoute';
+  } else {
+    audio.pause(); audio = null;
+    this.textContent = '▶ Écouter';
+  }
+};
+</script>
+</body>
+</html>
