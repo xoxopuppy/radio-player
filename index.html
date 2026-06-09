@@ -9,38 +9,39 @@
     background: #0d0d0d;
     border-radius: 3px;
     width: 100%;
-    padding: 18px 24px;
+    padding: 13px 28px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
     font-family: 'Courier New', monospace;
   }
   #live-dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: #7ab3e0;
     flex-shrink: 0;
     animation: blink 1.4s ease-in-out infinite;
   }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
-  #clock { color: #7ab3e0; font-size: 13px; letter-spacing: 0.08em; flex-shrink: 0; min-width: 58px; }
-  #waves { display: flex; align-items: center; gap: 3px; height: 20px; flex-shrink: 0; }
-  .bar { width: 2px; background: #2a3d52; border-radius: 2px; transition: background 0.4s; }
+  #clock { color: #7ab3e0; font-size: 12px; letter-spacing: 0.08em; flex-shrink: 0; min-width: 58px; }
+  #waves { display: flex; align-items: center; gap: 3px; height: 16px; flex: 1; }
+  .bar { flex: 1; background: #2a3d52; border-radius: 2px; transition: background 0.4s; max-width: 3px; }
   .bar.active { background: #7ab3e0; }
   #play-btn {
     margin-left: auto;
     background: none;
-    border: 1px solid #2a3d52;
+    border: none;
     color: #7ab3e0;
-    font-size: 15px;
-    width: 34px; height: 34px;
-    display: flex; align-items: center; justify-content: center;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
     cursor: pointer;
-    border-radius: 50%;
-    transition: border-color 0.2s;
+    padding: 0;
     flex-shrink: 0;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
   }
-  #play-btn:hover { border-color: #7ab3e0; }
+  #play-btn:hover { opacity: 0.6; }
 </style>
 </head>
 <body>
@@ -48,17 +49,26 @@
   <div id="live-dot"></div>
   <span id="clock">--:--:--</span>
   <div id="waves">
+    <div class="bar" style="height:4px"></div>
+    <div class="bar" style="height:10px"></div>
+    <div class="bar" style="height:6px"></div>
+    <div class="bar" style="height:14px"></div>
+    <div class="bar" style="height:8px"></div>
+    <div class="bar" style="height:12px"></div>
+    <div class="bar" style="height:4px"></div>
+    <div class="bar" style="height:10px"></div>
+    <div class="bar" style="height:6px"></div>
+    <div class="bar" style="height:14px"></div>
+    <div class="bar" style="height:8px"></div>
+    <div class="bar" style="height:12px"></div>
     <div class="bar" style="height:5px"></div>
-    <div class="bar" style="height:13px"></div>
+    <div class="bar" style="height:10px"></div>
     <div class="bar" style="height:7px"></div>
-    <div class="bar" style="height:17px"></div>
-    <div class="bar" style="height:9px"></div>
-    <div class="bar" style="height:15px"></div>
+    <div class="bar" style="height:13px"></div>
     <div class="bar" style="height:5px"></div>
     <div class="bar" style="height:11px"></div>
-    <div class="bar" style="height:7px"></div>
   </div>
-  <button id="play-btn" aria-label="Play">&#9654;</button>
+  <button id="play-btn">Play</button>
 </div>
 
 <script>
@@ -78,12 +88,12 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  const baseH = [5,13,7,17,9,15,5,11,7];
+  const baseH = [4,10,6,14,8,12,4,10,6,14,8,12,5,10,7,13,5,11];
   let phase = 0;
   function animateBars() {
-    phase += 0.05;
+    phase += 0.04;
     bars.forEach((b, i) => {
-      const h = baseH[i] + Math.sin(phase + i * 0.9) * baseH[i] * 0.5;
+      const h = baseH[i] + Math.sin(phase + i * 0.7) * baseH[i] * 0.5;
       b.style.height = Math.max(2, Math.round(h)) + 'px';
     });
     animFrame = requestAnimationFrame(animateBars);
@@ -92,7 +102,7 @@
   btn.addEventListener('click', () => {
     playing = !playing;
     if (playing) {
-      btn.innerHTML = '&#9646;&#9646;';
+      btn.textContent = 'Pause';
       if (!audio) {
         audio = new Audio(AUDIO_URL);
         audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
@@ -105,7 +115,7 @@
       bars.forEach(b => b.classList.add('active'));
       animateBars();
     } else {
-      btn.innerHTML = '&#9654;';
+      btn.textContent = 'Play';
       audio.pause();
       bars.forEach((b,i) => { b.classList.remove('active'); b.style.height = baseH[i]+'px'; });
       cancelAnimationFrame(animFrame);
