@@ -1,22 +1,116 @@
 <!DOCTYPE html>
 <html>
-<body style="margin:0;background:transparent">
-<button id="btn" style="padding:12px 24px;font-size:16px;cursor:pointer">▶ Écouter</button>
-<script>
-const LOOP = 1839;
-const URL = "https://pub-4b318b763d6641acb72762ac7e54181d.r2.dev/loop.mp3";
-let audio = null;
-document.getElementById('btn').onclick = function() {
-  if (!audio) {
-    audio = new Audio(URL);
-    audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
-    audio.play();
-    this.textContent = '⏸ En écoute';
-  } else {
-    audio.pause(); audio = null;
-    this.textContent = '▶ Écouter';
+<head>
+<meta charset="UTF-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: transparent; }
+  #player {
+    background: #0d0d0d;
+    border-radius: 3px;
+    width: 100%;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Courier New', monospace;
   }
-};
+  #live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #7ab3e0;
+    flex-shrink: 0;
+    animation: blink 1.4s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+  #clock { color: #7ab3e0; font-size: 13px; letter-spacing: 0.08em; flex-shrink: 0; min-width: 58px; }
+  #waves { display: flex; align-items: center; gap: 3px; height: 20px; flex-shrink: 0; }
+  .bar { width: 2px; background: #2a3d52; border-radius: 2px; transition: background 0.4s; }
+  .bar.active { background: #7ab3e0; }
+  #play-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #2a3d52;
+    color: #7ab3e0;
+    font-size: 15px;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+  #play-btn:hover { border-color: #7ab3e0; }
+</style>
+</head>
+<body>
+<div id="player">
+  <div id="live-dot"></div>
+  <span id="clock">--:--:--</span>
+  <div id="waves">
+    <div class="bar" style="height:5px"></div>
+    <div class="bar" style="height:13px"></div>
+    <div class="bar" style="height:7px"></div>
+    <div class="bar" style="height:17px"></div>
+    <div class="bar" style="height:9px"></div>
+    <div class="bar" style="height:15px"></div>
+    <div class="bar" style="height:5px"></div>
+    <div class="bar" style="height:11px"></div>
+    <div class="bar" style="height:7px"></div>
+  </div>
+  <button id="play-btn" aria-label="Play">&#9654;</button>
+</div>
+
+<script>
+  const LOOP = 1839;
+  const AUDIO_URL = "https://pub-4b318b763d6641acb72762ac7e54181d.r2.dev/loop.mp3";
+  const btn = document.getElementById('play-btn');
+  const bars = document.querySelectorAll('.bar');
+  const clock = document.getElementById('clock');
+  let playing = false, audio = null, animFrame;
+
+  function updateClock() {
+    const now = new Date();
+    clock.textContent = String(now.getHours()).padStart(2,'0') + ':' +
+      String(now.getMinutes()).padStart(2,'0') + ':' +
+      String(now.getSeconds()).padStart(2,'0');
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  const baseH = [5,13,7,17,9,15,5,11,7];
+  let phase = 0;
+  function animateBars() {
+    phase += 0.05;
+    bars.forEach((b, i) => {
+      const h = baseH[i] + Math.sin(phase + i * 0.9) * baseH[i] * 0.5;
+      b.style.height = Math.max(2, Math.round(h)) + 'px';
+    });
+    animFrame = requestAnimationFrame(animateBars);
+  }
+
+  btn.addEventListener('click', () => {
+    playing = !playing;
+    if (playing) {
+      btn.innerHTML = '&#9646;&#9646;';
+      if (!audio) {
+        audio = new Audio(AUDIO_URL);
+        audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
+        audio.addEventListener('ended', () => {
+          audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
+          audio.play();
+        });
+      }
+      audio.play();
+      bars.forEach(b => b.classList.add('active'));
+      animateBars();
+    } else {
+      btn.innerHTML = '&#9654;';
+      audio.pause();
+      bars.forEach((b,i) => { b.classList.remove('active'); b.style.height = baseH[i]+'px'; });
+      cancelAnimationFrame(animFrame);
+    }
+  });
 </script>
 </body>
 </html>
