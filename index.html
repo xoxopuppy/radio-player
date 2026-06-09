@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: transparent; }
@@ -9,11 +10,11 @@
     background: #0d0d0d;
     border-radius: 3px;
     width: 100%;
-    padding: 13px 28px;
+    padding: 13px 32px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    font-family: 'Courier New', monospace;
+    gap: 28px;
+    font-family: 'Space Mono', monospace;
   }
   #live-dot {
     width: 6px; height: 6px;
@@ -23,7 +24,7 @@
     animation: blink 1.4s ease-in-out infinite;
   }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
-  #clock { color: #7ab3e0; font-size: 12px; letter-spacing: 0.08em; flex-shrink: 0; min-width: 58px; }
+  #clock { color: #7ab3e0; font-size: 12px; letter-spacing: 0.06em; flex-shrink: 0; min-width: 62px; }
   #waves { display: flex; align-items: center; gap: 3px; height: 16px; flex: 1; }
   .bar { flex: 1; background: #2a3d52; border-radius: 2px; transition: background 0.4s; max-width: 3px; }
   .bar.active { background: #7ab3e0; }
@@ -32,14 +33,16 @@
     background: none;
     border: none;
     color: #7ab3e0;
-    font-family: 'Courier New', monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 11px;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     cursor: pointer;
     padding: 0;
     flex-shrink: 0;
     text-transform: uppercase;
     transition: opacity 0.2s;
+    min-width: 44px;
+    text-align: right;
   }
   #play-btn:hover { opacity: 0.6; }
 </style>
@@ -67,6 +70,12 @@
     <div class="bar" style="height:13px"></div>
     <div class="bar" style="height:5px"></div>
     <div class="bar" style="height:11px"></div>
+    <div class="bar" style="height:4px"></div>
+    <div class="bar" style="height:12px"></div>
+    <div class="bar" style="height:7px"></div>
+    <div class="bar" style="height:15px"></div>
+    <div class="bar" style="height:6px"></div>
+    <div class="bar" style="height:10px"></div>
   </div>
   <button id="play-btn">Play</button>
 </div>
@@ -88,7 +97,7 @@
   setInterval(updateClock, 1000);
   updateClock();
 
-  const baseH = [4,10,6,14,8,12,4,10,6,14,8,12,5,10,7,13,5,11];
+  const baseH = [4,10,6,14,8,12,4,10,6,14,8,12,5,10,7,13,5,11,4,12,7,15,6,10];
   let phase = 0;
   function animateBars() {
     phase += 0.04;
