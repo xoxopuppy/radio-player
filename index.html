@@ -114,6 +114,12 @@
       btn.textContent = 'Pause';
       if (!audio) {
         audio = new Audio(AUDIO_URL);
+       if ('mediaSession' in navigator) {
+  navigator.mediaSession.metadata = new MediaMetadata({
+    title: 'channel zero',
+    artist: 'on air',
+  });
+}
         audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
         audio.addEventListener('ended', () => {
           audio.currentTime = Math.floor(Date.now()/1000) % LOOP;
